@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.5</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-preview2-201703021703" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PF.Dojo.User.Interfaces\PF.Dojo.User.Interfaces.csproj" />
+  </ItemGroup>
+</Project>
