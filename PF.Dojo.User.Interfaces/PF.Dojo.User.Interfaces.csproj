@@ -1,13 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <Reference Include="Orleans">
-      <HintPath>..\packages\Microsoft.Orleans.Core.1.4.0\lib\net451\Orleans.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-preview2-201703021703" />
   </ItemGroup>
 
 </Project>

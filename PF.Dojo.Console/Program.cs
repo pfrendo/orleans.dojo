@@ -30,15 +30,25 @@ namespace PF.Dojo.Console
             System.Console.WriteLine("Press Enter to terminate...");
             System.Console.ReadLine();
             return 0;
-
+            
         }
 
         private static async Task DoClientWork()
         {
-            var user = GrainClient.GrainFactory.GetGrain<IUserGrain>("User");
+            var user = GrainClient.GrainFactory.GetGrain<IUserGrain>(new Guid());
+
+            var userDetails = new UserDetails();
 
             System.Console.WriteLine("Please provide a username!");
-            await user.SetUsername(System.Console.ReadLine());
+            userDetails.Username = System.Console.ReadLine();
+
+            System.Console.WriteLine("Please provide a first name!");
+            userDetails.FirstName = System.Console.ReadLine();
+
+            System.Console.WriteLine("Please provide a last name!");
+            userDetails.LastName = System.Console.ReadLine();
+
+            await user.RegisterUser(userDetails);
         }
 
         private static void InitializeWithRetries(ClientConfiguration config, int initializeAttemptsBeforeFailing)

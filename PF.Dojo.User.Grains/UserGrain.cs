@@ -7,24 +7,34 @@ namespace PF.Dojo.User.Grains
 {
 	public class UserGrain : Grain, IUserGrain
 	{
-		private string _username;
+		private UserDetails _userDetails;
 
-		public override Task OnActivateAsync()
+	    public override Task OnActivateAsync()
 		{
 			var grainId = this.GetPrimaryKeyString();
 			Console.WriteLine($"Activated Grain {grainId}");
 
-			if (!string.IsNullOrWhiteSpace(_username))
-				Console.WriteLine($"Username was already set by '{grainId}'.");
+			if (_userDetails != null)
+				Console.WriteLine($"User Details have been set by '{grainId}'.");
 
 			return TaskDone.Done;
 		}
 
-		public Task SetUsername(string username)
+/*		public Task SetUsername(string username)
 		{
 			_username = username;
 			Console.WriteLine($"Username has been set to: '{username}'");
 			return TaskDone.Done;
-		}
+		}*/
+   
+	    public Task RegisterUser(UserDetails userDetails)
+	    {
+	        _userDetails = userDetails;
+
+	        Console.WriteLine($"Have been set to: username: '{_userDetails.Username}', " +
+	                          $"First Name: '{_userDetails.FirstName}' & Last Name: '{_userDetails.LastName}'");
+            
+	        return TaskDone.Done;
+        }
 	}
 }
