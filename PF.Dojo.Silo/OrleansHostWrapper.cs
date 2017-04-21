@@ -34,8 +34,11 @@ namespace PF.Dojo.Silo
             try
             {
                 _siloHost.InitializeOrleansSilo();
+
                 if (!_siloHost.StartOrleansSilo())
-                    throw new OrleansException($"Failed to start Orleans silo '{_siloHost.Name}' as a {_siloHost.Type} node.");
+                    throw new OrleansException(
+                        $"Failed to start Orleans silo '{_siloHost.Name}' as a {_siloHost.Type} node.");
+
                 Console.WriteLine($"Successfully started Orleans silo '{_siloHost.Name}' as a {_siloHost.Type} node.");
                 return 0;
             }
@@ -66,13 +69,12 @@ namespace PF.Dojo.Silo
             return 0;
         }
 
-        class SiloArgs
+        private class SiloArgs
         {
-
-            public SiloArgs(string siloName, string deploymentId)
+            private SiloArgs(string siloName, string deploymentId)
             {
-                this.DeploymentId = deploymentId;
-                this.SiloName = siloName;
+                DeploymentId = deploymentId;
+                SiloName = siloName;
             }
 
             public string SiloName { get; }
@@ -84,10 +86,9 @@ namespace PF.Dojo.Silo
                 string deploymentId = null;
                 string siloName = null;
 
-                foreach (string arg in args)
+                foreach (var arg in args)
                 {
                     if (arg.StartsWith("-") || arg.StartsWith("/"))
-                    {
                         switch (arg.ToLowerInvariant())
                         {
                             case "/?":
@@ -100,11 +101,10 @@ namespace PF.Dojo.Silo
                                 Console.WriteLine($"Bad command line arguments supplied: {arg}");
                                 return null;
                         }
-                    }
                     if (arg.Contains("="))
                     {
-                        string[] parameters = arg.Split('=');
-                        if (String.IsNullOrEmpty(parameters[1]))
+                        var parameters = arg.Split('=');
+                        if (string.IsNullOrEmpty(parameters[1]))
                         {
                             Console.WriteLine($"Bad command line arguments supplied: {arg}");
                             return null;
@@ -135,7 +135,7 @@ namespace PF.Dojo.Silo
 
             public static void PrintUsage()
             {
-                string consoleAppName = typeof(SiloArgs).GetTypeInfo().Assembly.GetName().Name;
+                var consoleAppName = typeof(SiloArgs).GetTypeInfo().Assembly.GetName().Name;
                 Console.WriteLine(
                     $@"USAGE: {consoleAppName} [name=<siloName>] [deploymentId=<idString>] [/debug]
                 Where:
@@ -143,7 +143,6 @@ namespace PF.Dojo.Silo
                 deploymentId=<idString> - Optionally override the deployment group this host instance should run in 
                 (otherwise will use the one in the configuration");
             }
-
         }
     }
 }

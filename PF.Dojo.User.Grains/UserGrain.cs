@@ -20,18 +20,11 @@ namespace PF.Dojo.User.Grains
 			return TaskDone.Done;
 		}
 
-/*		public Task SetUsername(string username)
-		{
-			_username = username;
-			Console.WriteLine($"Username has been set to: '{username}'");
-			return TaskDone.Done;
-		}*/
-   
 	    public Task RegisterUser(UserDetails userDetails)
 	    {
 	        _userDetails = userDetails;
 
-	        Console.WriteLine($"Have been set to: username: '{_userDetails.Username}', " +
+	        Console.WriteLine($"Have been set to GrainId: '{this.GetPrimaryKey()}', username: '{_userDetails.Username}', " +
 	                          $"First Name: '{_userDetails.FirstName}' & Last Name: '{_userDetails.LastName}'");
             
 	        return TaskDone.Done;
