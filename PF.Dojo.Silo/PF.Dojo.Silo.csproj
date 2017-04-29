@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PF.Dojo.StorageProviders\PF.Dojo.StorageProviders.csproj" />
     <ProjectReference Include="..\PF.Dojo.User.Grains\PF.Dojo.User.Grains.csproj" />
     <ProjectReference Include="..\PF.Dojo.User.Interfaces\PF.Dojo.User.Interfaces.csproj" />
   </ItemGroup>

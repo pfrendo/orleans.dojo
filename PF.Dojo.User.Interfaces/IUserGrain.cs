@@ -15,5 +15,9 @@ namespace PF.Dojo.User.Interfaces
     public interface IUserGrain : IGrainWithGuidKey
     {
         Task RegisterUser(UserDetails userDetails);
+
+        Task<string> GetUsername();
+        Task<string> GetFirstName();
+        Task<string> GetLastName();
     }
 }

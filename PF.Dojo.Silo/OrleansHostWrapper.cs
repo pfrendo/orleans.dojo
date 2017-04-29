@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
 using Orleans.Runtime.Host;
+using PF.Dojo.StorageProviders.MongoDb;
 
 namespace PF.Dojo.Silo
 {
@@ -20,7 +22,16 @@ namespace PF.Dojo.Silo
                 config.Globals.DeploymentId = siloArgs.DeploymentId;
 
             _siloHost = new SiloHost(siloArgs.SiloName, config);
+
             _siloHost.LoadOrleansConfig();
+
+            // todo: use xml config instead.
+            var props = new Dictionary<string, string>
+            {
+                ["Database"] = "orleanssandbox",
+                ["ConnectionString"] = "" // use your connection string here
+            };
+            config.Globals.RegisterStorageProvider<MongoDbStorageProvider>("MongoDBStorage", props);
         }
 
         public int Run()
