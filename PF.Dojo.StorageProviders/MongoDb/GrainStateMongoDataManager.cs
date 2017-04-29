@@ -10,131 +10,131 @@ using Orleans;
 
 namespace PF.Dojo.StorageProviders.MongoDb
 {
-    /// <summary>
-    /// Interfaces with a MongoDB database driver.
-    /// </summary>
-    public class GrainStateMongoDataManager
-    {
-        private static readonly ConcurrentDictionary<string, bool> RegisterIndexMap = new ConcurrentDictionary<string, bool>();
+	/// <summary>
+	///     Interfaces with a MongoDB database driver.
+	/// </summary>
+	public class GrainStateMongoDataManager
+	{
+		private static readonly ConcurrentDictionary<string, bool> RegisterIndexMap =
+			new ConcurrentDictionary<string, bool>();
 
-        public static JsonSerializerSettings JsonSetting = new JsonSerializerSettings()
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            Converters = new List<JsonConverter>()
-        };
+		public static JsonSerializerSettings JsonSetting = new JsonSerializerSettings
+		{
+			NullValueHandling = NullValueHandling.Ignore,
+			Converters = new List<JsonConverter>()
+		};
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="connectionString">A database name.</param>
-        /// <param name="databaseName">A MongoDB database connection string.</param>
-        public GrainStateMongoDataManager(string databaseName, string connectionString)
-        {
-            var client = new MongoClient(connectionString);
-            _database = client.GetDatabase(databaseName);
-        }
+		private readonly IMongoDatabase _database;
 
-        /// <summary>
-        /// Deletes a file representing a grain state object.
-        /// </summary>
-        /// <param name="collectionName">The type of the grain state object.</param>
-        /// <param name="key">The grain id string.</param>
-        /// <returns>Completion promise for this operation.</returns>
-        public Task DeleteAsync(string collectionName, string key)
-        {
-            var collection = _database.GetCollection<BsonDocument>(collectionName);
-            if (collection == null)
-                return TaskDone.Done;
+		/// <summary>
+		///     Constructor
+		/// </summary>
+		/// <param name="connectionString">A database name.</param>
+		/// <param name="databaseName">A MongoDB database connection string.</param>
+		public GrainStateMongoDataManager(string databaseName, string connectionString)
+		{
+			var client = new MongoClient(connectionString);
+			_database = client.GetDatabase(databaseName);
+		}
 
-            var query = BsonDocument.Parse("{key:\"" + key + "\"}");
-            collection.FindOneAndDeleteAsync(query);
+		/// <summary>
+		///     Deletes a file representing a grain state object.
+		/// </summary>
+		/// <param name="collectionName">The type of the grain state object.</param>
+		/// <param name="key">The grain id string.</param>
+		/// <returns>Completion promise for this operation.</returns>
+		public Task DeleteAsync(string collectionName, string key)
+		{
+			var collection = _database.GetCollection<BsonDocument>(collectionName);
+			if (collection == null)
+				return TaskDone.Done;
 
-            return TaskDone.Done;
-        }
+			var query = BsonDocument.Parse("{key:\"" + key + "\"}");
+			collection.FindOneAndDeleteAsync(query);
 
-        /// <summary>
-        /// Reads a file representing a grain state object.
-        /// </summary>
-        /// <param name="collectionName">The type of the grain state object.</param>
-        /// <param name="key">The grain id string.</param>
-        /// <returns>Completion promise for this operation.</returns>
-        public async Task<string> ReadAsync(string collectionName, string key)
-        {
-            var collection = await GetCollection(collectionName);
+			return TaskDone.Done;
+		}
 
-            if (collection == null)
-                return null;
+		/// <summary>
+		///     Reads a file representing a grain state object.
+		/// </summary>
+		/// <param name="collectionName">The type of the grain state object.</param>
+		/// <param name="key">The grain id string.</param>
+		/// <returns>Completion promise for this operation.</returns>
+		public async Task<string> ReadAsync(string collectionName, string key)
+		{
+			var collection = await GetCollection(collectionName);
 
-            var query = BsonDocument.Parse("{__key:\"" + key + "\"}");
-            using (var cursor = await collection.FindAsync(query))
-            {
-                var existing = (await cursor.ToListAsync()).FirstOrDefault();
+			if (collection == null)
+				return null;
 
-                if (existing == null)
-                    return null;
+			var query = BsonDocument.Parse("{__key:\"" + key + "\"}");
+			using (var cursor = await collection.FindAsync(query))
+			{
+				var existing = (await cursor.ToListAsync()).FirstOrDefault();
 
-                existing.Remove("_id");
-                existing.Remove("__key");
+				if (existing == null)
+					return null;
 
-                return existing.ToJson();
-            }
-        }
+				existing.Remove("_id");
+				existing.Remove("__key");
 
-        /// <summary>
-        /// Writes a file representing a grain state object.
-        /// </summary>
-        /// <param name="collectionName">The type of the grain state object.</param>
-        /// <param name="key">The grain id string.</param>
-        /// <param name="entityData">The grain state data to be stored./</param>
-        /// <returns>Completion promise for this operation.</returns>
-        public async Task WriteAsync(string collectionName, string key, IGrainState entityData)
-        {
-            var collection = await GetCollection(collectionName);
+				return existing.ToJson();
+			}
+		}
 
-            var query = BsonDocument.Parse("{__key:\"" + key + "\"}");
+		/// <summary>
+		///     Writes a file representing a grain state object.
+		/// </summary>
+		/// <param name="collectionName">The type of the grain state object.</param>
+		/// <param name="key">The grain id string.</param>
+		/// <param name="entityData">The grain state data to be stored./</param>
+		/// <returns>Completion promise for this operation.</returns>
+		public async Task WriteAsync(string collectionName, string key, IGrainState entityData)
+		{
+			var collection = await GetCollection(collectionName);
 
-            using (var cursor = await collection.FindAsync(query))
-            {
-                var existing = (await cursor.ToListAsync()).FirstOrDefault();
+			var query = BsonDocument.Parse("{__key:\"" + key + "\"}");
 
-                var json = JsonConvert.SerializeObject(entityData, JsonSetting);
+			using (var cursor = await collection.FindAsync(query))
+			{
+				var existing = (await cursor.ToListAsync()).FirstOrDefault();
 
-                var doc = BsonSerializer.Deserialize<BsonDocument>(json);
-                doc["__key"] = key;
+				var json = JsonConvert.SerializeObject(entityData, JsonSetting);
 
-                if (existing != null)
-                {
-                    doc["_id"] = existing["_id"];
-                    await collection.ReplaceOneAsync(query, doc);
+				var doc = BsonSerializer.Deserialize<BsonDocument>(json);
+				doc["__key"] = key;
 
-                }
-                else
-                {
-                    await collection.InsertOneAsync(doc);
-                }
-            }
-        }
+				if (existing != null)
+				{
+					doc["_id"] = existing["_id"];
+					await collection.ReplaceOneAsync(query, doc);
+				}
+				else
+				{
+					await collection.InsertOneAsync(doc);
+				}
+			}
+		}
 
-        private async Task<IMongoCollection<BsonDocument>> GetCollection(string name)
-        {
-            var collection = _database.GetCollection<BsonDocument>(name);
+		private async Task<IMongoCollection<BsonDocument>> GetCollection(string name)
+		{
+			var collection = _database.GetCollection<BsonDocument>(name);
 
-            if (RegisterIndexMap.ContainsKey(name)) return collection;
+			if (RegisterIndexMap.ContainsKey(name)) return collection;
 
-            using (var cursor = await collection.Indexes.ListAsync())
-            {
-                var indexes = await cursor.ToListAsync();
-                if (indexes.Count(index => index["name"] == "__key_1") == 0)
-                {
-                    var keys = Builders<BsonDocument>.IndexKeys.Ascending("__key");
-                    await collection.Indexes.CreateOneAsync(keys,
-                        new CreateIndexOptions() {Unique = true, Version = 1});
-                }
-                RegisterIndexMap.TryAdd(name, true);
-            }
-            return collection;
-        }
-
-        private readonly IMongoDatabase _database;
-    }
+			using (var cursor = await collection.Indexes.ListAsync())
+			{
+				var indexes = await cursor.ToListAsync();
+				if (indexes.Count(index => index["name"] == "__key_1") == 0)
+				{
+					var keys = Builders<BsonDocument>.IndexKeys.Ascending("__key");
+					await collection.Indexes.CreateOneAsync(keys,
+						new CreateIndexOptions {Unique = true, Version = 1});
+				}
+				RegisterIndexMap.TryAdd(name, true);
+			}
+			return collection;
+		}
+	}
 }

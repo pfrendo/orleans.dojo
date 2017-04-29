@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <OrleansConfiguration xmlns="urn:orleans">
   <Globals>
     <StorageProviders>
-      <Provider Type="PF.Dojo.StorageProviders.MongoDb.MongoDbStorageProvider" Name="MongoDBStorage" Database="orleanssandbox" ConnectionString="enter your own connection string" />
+      <Provider Type="PF.Dojo.StorageProviders.MongoDb.MongoDbStorageProvider" Name="MongoDBStorage"
+                Database="orleanssandbox"
+                ConnectionString="Enter your own mongoDB connection string here" />
     </StorageProviders>
     <SeedNode Address="localhost" Port="11111" />
   </Globals>

@@ -4,36 +4,36 @@ using PF.Dojo.Silo;
 
 namespace PF.Dojo.Orleans
 {
-    public class Program
-    {
-        private static OrleansHostWrapper _hostWrapper;
+	public class Program
+	{
+		private static OrleansHostWrapper _hostWrapper;
 
-        public static int Main(string[] args)
-        {
-            Console.WriteLine("Initializing Silo host...");
-            var exitCode = StartSilo(args);
-            Console.WriteLine("Press any key to terminate.");
-            Console.ReadLine();
+		public static int Main(string[] args)
+		{
+			Console.WriteLine("Initializing Silo host...");
+			var exitCode = StartSilo(args);
+			Console.WriteLine("Press any key to terminate.");
+			Console.ReadLine();
 
-            exitCode += ShutdownSilo();
+			exitCode += ShutdownSilo();
 
-            return exitCode;
-        }
+			return exitCode;
+		}
 
-        private static int StartSilo(string[] args)
-        {
-            var config = ClusterConfiguration.LocalhostPrimarySilo();
-            config.AddMemoryStorageProvider();
+		private static int StartSilo(string[] args)
+		{
+			var config = ClusterConfiguration.LocalhostPrimarySilo();
+			config.AddMemoryStorageProvider();
 
-            //config.Defaults.DefaultTraceLevel = Severity.Verbose3;
+			//config.Defaults.DefaultTraceLevel = Severity.Verbose3;
 
-            _hostWrapper = new OrleansHostWrapper(config, args);
-            return _hostWrapper.Run();
-        }
+			_hostWrapper = new OrleansHostWrapper(config, args);
+			return _hostWrapper.Run();
+		}
 
-        private static int ShutdownSilo()
-        {
-            return _hostWrapper?.Stop() ?? 0;
-        }
-    }
+		private static int ShutdownSilo()
+		{
+			return _hostWrapper?.Stop() ?? 0;
+		}
+	}
 }
