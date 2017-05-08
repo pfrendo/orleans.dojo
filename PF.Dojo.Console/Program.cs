@@ -34,7 +34,7 @@ namespace PF.Dojo.Console
 
 		private static async Task DoClientWork()
 		{
-			var user = GrainClient.GrainFactory.GetGrain<IUserGrain>(new Guid());
+			var user = GrainClient.GrainFactory.GetGrain<IUserGrain>(Guid.NewGuid());
 
 			var userDetails = new UserDetails();
 
