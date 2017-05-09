@@ -57,6 +57,7 @@ namespace PF.Dojo.Console
 				try
 				{
 					GrainClient.Initialize(config);
+
 					System.Console.WriteLine("Client successfully connect to silo host");
 					break;
 				}

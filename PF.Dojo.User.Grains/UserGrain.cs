@@ -13,7 +13,7 @@ namespace PF.Dojo.User.Grains
 		public string LastName { get; set; }
 	}
 
-	[StorageProvider(ProviderName = "MongoDBStorage")]
+	[StorageProvider(ProviderName = "DDBStore")]
 	public class UserGrain : Grain<UserGrainState>, IUserGrain
 	{
 		public Task RegisterUser(UserDetails userDetails)
